@@ -1,0 +1,1570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>NexDocs — 30-Day Content Calendar</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+  /* PASSWORD GATE */
+  #gate {
+    position: fixed; inset: 0; z-index: 9999;
+    background: var(--ink, #0D0D0D);
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 1.5rem;
+    padding: 2rem;
+  }
+  #gate h2 {
+    font-family: 'Playfair Display', serif;
+    color: #F5F0E8; font-size: 1.6rem; font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+  #gate p { color: #888; font-size: 0.88rem; }
+  #gate input {
+    padding: 12px 20px; border: 1.5px solid #333;
+    background: #1a1a1a; color: #F5F0E8;
+    font-family: 'DM Sans', sans-serif; font-size: 1rem;
+    outline: none; width: 100%; max-width: 320px;
+    letter-spacing: 0.1em; text-align: center;
+    transition: border-color 0.2s;
+  }
+  #gate input:focus { border-color: #C9A84C; }
+  #gate button {
+    background: #C9A84C; color: #0D0D0D;
+    border: none; padding: 12px 36px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem; font-weight: 500;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    cursor: pointer; width: 100%; max-width: 320px;
+    transition: background 0.2s;
+  }
+  #gate button:hover { background: #e0bc6a; }
+  #gate .error { color: #B85C38; font-size: 0.82rem; display: none; }
+  :root {
+    --ink: #0D0D0D; --cream: #F5F0E8; --gold: #C9A84C;
+    --gold-light: #F2E8CC; --rust: #B85C38; --muted: #6B6560;
+    --border: #E2DDD5; --green: #2D6A4F; --green-light: #D8F3DC;
+    --wa: #25D366; --fb: #1877F2;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'DM Sans',sans-serif; background:var(--cream); color:var(--ink); }
+  .page { max-width:960px; margin:0 auto; padding:3rem 1.5rem 6rem; }
+
+  /* HEADER */
+  .header { margin-bottom:3rem; }
+  .header h1 { font-family:'Playfair Display',serif; font-size:2.2rem; font-weight:700; margin-bottom:0.3rem; }
+  .header p { color:var(--muted); font-size:0.95rem; }
+
+  /* FILTER TABS */
+  .tabs { display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:2.5rem; }
+  .tab {
+    padding:8px 20px; border:1.5px solid var(--border);
+    background:white; font-family:'DM Sans',sans-serif;
+    font-size:0.8rem; font-weight:500; letter-spacing:0.04em;
+    text-transform:uppercase; cursor:pointer; transition:all 0.15s;
+  }
+  .tab:hover { border-color:var(--ink); }
+  .tab.active { background:var(--ink); color:var(--cream); border-color:var(--ink); }
+
+  /* WEEK HEADER */
+  .week-label {
+    font-family:'Playfair Display',serif;
+    font-size:1.3rem; font-weight:700;
+    border-bottom:2px solid var(--ink);
+    padding-bottom:0.5rem; margin:2.5rem 0 1.5rem;
+    display:flex; justify-content:space-between; align-items:baseline;
+  }
+  .week-label span { font-family:'DM Sans',sans-serif; font-size:0.75rem; font-weight:400; color:var(--muted); }
+
+  /* DAY CARD */
+  .day-card {
+    background:white; border:1.5px solid var(--border);
+    margin-bottom:1rem; overflow:hidden;
+    transition:box-shadow 0.2s;
+  }
+  .day-card:hover { box-shadow:0 8px 24px rgba(0,0,0,0.06); }
+  .day-header {
+    display:flex; align-items:center; gap:1rem;
+    padding:1rem 1.5rem; border-bottom:1px solid var(--border);
+    cursor:pointer; user-select:none;
+  }
+  .day-num {
+    font-family:'Playfair Display',serif;
+    font-size:1.6rem; font-weight:700; color:var(--gold);
+    min-width:48px; line-height:1;
+  }
+  .day-meta { flex:1; }
+  .day-title { font-weight:500; font-size:0.95rem; }
+  .day-tags { display:flex; gap:0.4rem; margin-top:0.3rem; flex-wrap:wrap; }
+  .tag {
+    font-size:0.65rem; font-weight:500; letter-spacing:0.06em;
+    text-transform:uppercase; padding:2px 8px;
+  }
+  .tag.wa { background:var(--green-light); color:var(--green); }
+  .tag.fb { background:#E3F2FD; color:#1565C0; }
+  .tag.both { background:var(--gold-light); color:#7A5C00; }
+  .tag.service { background:#F3E8FF; color:#6B21A8; }
+  .chevron { font-size:0.8rem; color:var(--muted); transition:transform 0.2s; }
+  .day-card.open .chevron { transform:rotate(180deg); }
+
+  /* DAY BODY */
+  .day-body { display:none; padding:1.5rem; }
+  .day-card.open .day-body { display:block; }
+
+  /* MESSAGE BOX */
+  .msg-section { margin-bottom:1.5rem; }
+  .msg-label {
+    font-size:0.7rem; font-weight:500; letter-spacing:0.1em;
+    text-transform:uppercase; margin-bottom:0.6rem;
+    display:flex; align-items:center; gap:0.5rem;
+  }
+  .msg-label .dot {
+    width:8px; height:8px; border-radius:50%; flex-shrink:0;
+  }
+  .dot.wa { background:var(--wa); }
+  .dot.fb { background:var(--fb); }
+  .msg-box {
+    background:var(--cream); border-left:3px solid var(--gold);
+    padding:1rem 1rem 1rem 1.2rem;
+    font-size:0.88rem; line-height:1.8;
+    white-space:pre-wrap; position:relative;
+  }
+  .copy-btn {
+    position:absolute; top:0.6rem; right:0.6rem;
+    background:var(--ink); color:var(--cream);
+    border:none; font-family:'DM Sans',sans-serif;
+    font-size:0.65rem; padding:4px 10px;
+    letter-spacing:0.06em; text-transform:uppercase;
+    cursor:pointer; transition:background 0.15s;
+  }
+  .copy-btn:hover { background:var(--gold); color:var(--ink); }
+  .copy-btn.copied { background:var(--green); }
+
+  .tip {
+    background:var(--green-light); padding:0.75rem 1rem;
+    font-size:0.82rem; color:#1B4332; margin-top:1rem;
+    display:flex; gap:0.5rem;
+  }
+
+  /* PROGRESS */
+  .progress-bar {
+    background:white; border:1.5px solid var(--border);
+    padding:1.5rem; margin-bottom:2.5rem;
+  }
+  .progress-bar h3 { font-size:0.8rem; font-weight:500; letter-spacing:0.08em; text-transform:uppercase; color:var(--muted); margin-bottom:0.75rem; }
+  .track { height:8px; background:var(--border); position:relative; }
+  .fill { height:8px; background:var(--gold); width:0%; transition:width 0.4s; }
+  .progress-label { font-size:0.8rem; color:var(--muted); margin-top:0.4rem; }
+  .done-count { color:var(--gold); font-weight:600; }
+
+  /* LEGEND */
+  .legend { display:flex; gap:1.5rem; flex-wrap:wrap; margin-bottom:2rem; font-size:0.8rem; color:var(--muted); }
+  .legend-item { display:flex; align-items:center; gap:0.4rem; }
+
+  @media(max-width:600px) {
+    .header h1 { font-size:1.6rem; }
+    .day-num { font-size:1.2rem; min-width:36px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- PASSWORD GATE -->
+<div id="gate">
+  <h2>NexDocs — Private</h2>
+  <p>Enter your password to access this page</p>
+  <input type="password" id="pw-input" placeholder="Password" onkeydown="if(event.key==='Enter')checkPw()"/>
+  <button onclick="checkPw()">Unlock →</button>
+  <span class="error" id="pw-error">Incorrect password. Try again.</span>
+</div>
+
+<!-- MAIN CONTENT (hidden until unlocked) -->
+<div id="main-content" style="display:none">
+<div class="page">
+
+  <div class="header">
+    <h1>NexDocs — 30-Day Content Calendar</h1>
+    <p>Your daily posting plan for Facebook groups & WhatsApp Status. Click any day to expand.</p>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="progress-bar">
+    <h3>Your Progress</h3>
+    <div class="track"><div class="fill" id="progress-fill"></div></div>
+    <p class="progress-label"><span class="done-count" id="done-count">0</span> of 30 days completed</p>
+  </div>
+
+  <!-- LEGEND -->
+  <div class="legend">
+    <div class="legend-item"><span class="dot wa" style="width:10px;height:10px;border-radius:50%;background:var(--wa);display:inline-block;"></span> WhatsApp Status</div>
+    <div class="legend-item"><span class="dot fb" style="width:10px;height:10px;border-radius:50%;background:var(--fb);display:inline-block;"></span> Facebook Group Post</div>
+    <div class="legend-item"><span style="width:10px;height:10px;background:var(--gold-light);display:inline-block;border:1px solid var(--gold);"></span> Post on Both</div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab active" onclick="filterWeek('all', this)">All 30 Days</button>
+    <button class="tab" onclick="filterWeek('week1', this)">Week 1</button>
+    <button class="tab" onclick="filterWeek('week2', this)">Week 2</button>
+    <button class="tab" onclick="filterWeek('week3', this)">Week 3</button>
+    <button class="tab" onclick="filterWeek('week4', this)">Week 4</button>
+  </div>
+
+  <!-- WEEK 1 -->
+  <div class="week-label" data-week="week1">Week One <span>Days 1–7 · CV & Job Seekers Focus</span></div>
+
+  <!-- DAY 1 -->
+  <div class="day-card" data-week="week1" id="card-1">
+    <div class="day-header" onclick="toggleDay(1)">
+      <div class="day-num">01</div>
+      <div class="day-meta">
+        <div class="day-title">Launch Day — Introduce Yourself</div>
+        <div class="day-tags"><span class="tag both">Both</span><span class="tag service">CV Writing</span></div>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="day-body">
+      <div class="msg-section">
+        <div class="msg-label"><span class="dot wa"></span> WhatsApp Status</div>
+        <div class="msg-box"><button class="copy-btn" onclick="copyMsg(this)">Copy</button>I help Kenyans write professional CVs, business proposals & documents. Fast. Affordable. 100% remote.
+From KES 800. Delivered in 24hrs.
+👉 ashiruma.github.io/nexdocs</div>
+      </div>
+      <div class="msg-section">
+        <div class="msg-label"><span class="dot fb"></span> Facebook Group Post</div>
+        <div class="msg-box"><button class="copy-btn" onclick="copyMsg(this)">Copy</button>Hello everyone 👋
+
+I've just launched NexDocs — a professional document service for Kenyans.
+
+I help with:
+✅ CVs & Cover Letters (from KES 800)
+✅ Business Proposals (from KES 5,000)
+✅ School Documents & SACCO Communications
+✅ Social Media Content for businesses
+
+Everything delivered within 24–48 hours via WhatsApp or email. Payment via M-Pesa.
+
+See my work: ashiruma.github.io/nexdocs
+WhatsApp: +254 719 317 559
+
+Drop a comment or DM if you need anything!</div>
+      </div>
+      <div class="tip">💡 Post this in at least 5 Facebook groups today. This is your foundation — the first impression.</div>
+    </div>
+  </div>
+
+  <!-- DAY 2 -->
+  <div class="day-card" data-week="week1" id="card-2">
+    <div class="day-header" onclick="toggleDay(2)">
+      <div class="day-num">02</div>
+      <div class="day-meta">
+        <div class="day-title">CV Pain Point — The Ignored CV</div>
+        <div class="day-tags"><span class="tag both">Both</span><span class="tag service">CV Writing</span></div>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="day-body">
+      <div class="msg-section">
+        <div class="msg-label"><span class="dot wa"></span> WhatsApp Status</div>
+        <div class="msg-box"><button class="copy-btn" onclick="copyMsg(this)">Copy</button>Applying for jobs but getting no callbacks?
+
+The problem is usually your CV — not your qualifications.
+
+I fix CVs. KES 800. 24hrs.
+ashiruma.github.io/nexdocs</div>
+      </div>
+      <div class="msg-section">
+        <div class="msg-label"><span class="dot fb"></span> Facebook Group Post</div>
+        <div class="msg-box"><button class="copy-btn" onclick="copyMsg(this)">Copy</button>Quick question for job seekers in this group 👇
+
+How long have you been applying without getting a single interview call?
+
+Most of the time it's not your experience — it's how your CV is formatted and written. Recruiters spend less than 10 seconds scanning a CV before deciding.
+
+I write ATS-friendly, professionally formatted CVs that actually get opened.
+
+✅ From KES 800
+✅ Delivered in 24 hours
+✅ Cover letter included in bundles
+✅ M-Pesa payment
+
+DM me or visit: ashiruma.github.io/nexdocs</div>
+      </div>
+      <div class="tip">💡 Post in job-seeker groups: "Jobs Kenya", "Kisumu Jobs", "Nairobi Jobs Board"</div>
+    </div>
+  </div>
+
+  <!-- DAY 3 -->
+  <div class="day-card" data-week="week1" id="card-3">
+    <div class="day-header" onclick="toggleDay(3)">
+      <div class="day-num">03</div>
+      <div class="day-meta">
+        <div class="day-title">Business Proposals — Tender Season</div>
+        <div class="day-tags"><span class="tag both">Both</span><span class="tag service">Proposals</span></div>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="day-body">
+      <div class="msg-section">
+        <div class="msg-label"><span class="dot wa"></span> WhatsApp Status</div>
+        <div class="msg-box"><button class="copy-btn" onclick="copyMsg(this)">Copy</button>Got a business idea but can't put it on paper?
+
+I write business proposals that banks, SACCOs and investors actually read.
+
+From KES 5,000. ashiruma.github.io/nexdocs</div>
+      </div>
+      <div class="msg-section">
+        <div class="msg-label"><span class="dot fb"></span> Facebook Group Post</div>
+        <div class="msg-box"><button class="copy-btn" onclick="copyMsg(this)">Copy</button>Entrepreneurs & business owners in Kenya 📢
+
+Are you applying for a bank loan, SACCO financing, or a government tender?
+
+The difference between approval and rejection is often how well your proposal is written.
+
+I write professional business proposals that are:
+📋 Clearly structured
+💰 Includes realistic financial projections
+✅ Formatted for Kenyan banks & institutions
+📄 Delivered in 3–5 days
+
+Starting from KES 5,000. Payment via M-Pesa.
+
+DM me with your business idea and I'll tell you exactly what I can do for you.
+👉 ashiruma.github.io/nexdocs</div>
+      </div>
+      <div class="tip">💡 Post in: "Kenya Business Network", "Kenya Entrepreneurs", "Kisumu Business Community"</div>
+    </div>
+  </div>
+
+  <!-- DAY 4 -->
+  <div class="day-card" data-week="week1" id="card-4">
+    <div class="day-header" onclick="toggleDay(4)">
+      <div class="day-num">04</div>
+      <div class="day-meta">
+        <div class="day-title">School Documents — Term Time</div>
+        <div class="day-tags"><span class="tag both">Both</span><span class="tag service">Schools</span></div>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="day-body">
+      <div class="msg-section">
+        <div class="msg-label"><span class="dot wa"></span> WhatsApp Status</div>
+        <div class="msg-box"><button class="copy-btn" onclick="copyMsg(this)">Copy</button>Teachers — end of term approaching?
+
+I write report comments for your entire class in 24 hours.
+
+KES 3,000 per class. ashiruma.github.io/nexdocs</div>
+      </div>
+      <div class="msg-section">
+        <div class="msg-label"><span class="dot fb"></span> Facebook Group Post</div>
+        <div class="msg-box"><button class="copy-btn" onclick="copyMsg(this)">Copy</button>Calling all teachers in Kenya 🏫
+
+End of term is coming. Are you dreading writing 40+ individual report comments again?
+
+I provide:
+📝 Full class report comments (up to 45 students)
+📊 5 performance bands — each comment unique
+✏️ Editable Word document, ready to personalise
+⚡ Delivered within 24 hours
+
+KES 3,000 per class. M-Pesa payment.
+
+Save yourself 3 days of work. DM me now or visit:
+👉 ashiruma.github.io/nexdocs</div>
+      </div>
+      <div class="tip">💡 Post in teacher Facebook groups: "Kenya Teachers", "Kenya Schools Network", "Primary School Teachers Kenya"</div>
+    </div>
+  </div>
+
+  <!-- DAY 5 -->
+  <div class="day-card" data-week="week1" id="card-5">
+    <div class="day-header" onclick="toggleDay(5)">
+      <div class="day-num">05</div>
+      <div class="day-meta">
+        <div class="day-title">Social Proof — Share a Result</div>
+        <div class="day-tags"><span class="tag both">Both</span><span class="tag service">CV Writing</span></div>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="day-body">
+      <div class="msg-section">
+        <div class="msg-label"><span class="dot wa"></span> WhatsApp Status</div>
+        <div class="msg-box"><button class="copy-btn" onclick="copyMsg(this)">Copy</button>"I got an interview call 4 days after you rewrote my CV. Thank you!"
+
+— Recent client, Nairobi
+
+KES 800. 24hrs. ashiruma.github.io/nexdocs</div>
+      </div>
+      <div class="msg-section">
+        <div class="msg-label"><span class="dot fb"></span> Facebook Group Post</div>
+        <div class="msg-box"><button class="copy-btn" onclick="copyMsg(this)">Copy</button>This message made my week 🙏
+
+A client sent me this after I rewrote their CV:
+
+"I had been applying for 3 months with no response. Within one week of sending your CV I got two interview calls. I don't know what you did but it worked."
+
+— Job seeker, Nairobi
+
+If your CV isn't getting responses, it needs work. I can help.
+
+✅ Professional CV from KES 800
+✅ Delivered in 24 hours
+✅ M-Pesa payment
+✅ One free revision included
+
+DM me or visit: ashiruma.github.io/nexdocs</div>
+      </div>
+      <div class="tip">💡 Testimonials perform best on Fridays. If you have a real one by now, use it instead — real testimonials convert even better.</div>
+    </div>
+  </div>
+
+  <!-- DAY 6 -->
+  <div class="day-card" data-week="week1" id="card-6">
+    <div class="day-header" onclick="toggleDay(6)">
+      <div class="day-num">06</div>
+      <div class="day-meta">
+        <div class="day-title">Landlord Documents</div>
+        <div class="day-tags"><span class="tag both">Both</span><span class="tag service">Landlords</span></div>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="day-body">
+      <div class="msg-section">
+        <div class="msg-label"><span class="dot wa"></span> WhatsApp Status</div>
+        <div class="msg-box"><button class="copy-btn" onclick="copyMsg(this)">Copy</button>Landlords — do you have a proper tenancy agreement?
+
+A weak agreement costs you more than the document.
+
+KES 3,500. Delivered today. ashiruma.github.io/nexdocs</div>
+      </div>
+      <div class="msg-section">
+        <div class="msg-label"><span class="dot fb"></span> Facebook Group Post</div>
+        <div class="msg-box"><button class="copy-btn" onclick="copyMsg(this)">Copy</button>Landlords & property owners in Kenya 🏠
+
+Quick question: when a tenant refuses to pay or damages your property — do you have the right documents to protect yourself?
+
+Many landlords in Kenya lose disputes because their tenancy agreements are weak, incomplete, or written informally.
+
+I provide:
+📄 Professional Tenancy Agreements (Kenya law format) — KES 3,500
+📲 WhatsApp Rent Reminder Sequence — KES 2,000
+📦 Full Landlord Document Pack (Agreement + reminders + eviction notice) — KES 7,000
+
+All delivered within 24 hours. M-Pesa payment.
+
+DM me or visit: ashiruma.github.io/nexdocs</div>
+      </div>
+      <div class="tip">💡 Find landlords in "Houses for Rent Kisumu", "Nairobi Landlords & Agents", or message people listing rentals on OLX Kenya.</div>
+    </div>
+  </div>
+
+  <!-- DAY 7 -->
+  <div class="day-card" data-week="week1" id="card-7">
+    <div class="day-header" onclick="toggleDay(7)">
+      <div class="day-num">07</div>
+      <div class="day-meta">
+        <div class="day-title">Week 1 Wrap — Full Services Reminder</div>
+        <div class="day-tags"><span class="tag both">Both</span><span class="tag service">All Services</span></div>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="day-body">
+      <div class="msg-section">
+        <div class="msg-label"><span class="dot wa"></span> WhatsApp Status</div>
+        <div class="msg-box"><button class="copy-btn" onclick="copyMsg(this)">Copy</button>NexDocs — One week in. Still going 💪
+
+CVs · Proposals · School docs · SACCO comms · Social media content · Landlord documents
+
+All remote. All affordable. M-Pesa.
+ashiruma.github.io/nexdocs</div>
+      </div>
+      <div class="msg-section">
+        <div class="msg-label"><span class="dot fb"></span> Facebook Group Post</div>
+        <div class="msg-box"><button class="copy-btn" onclick="copyMsg(this)">Copy</button>One week of NexDocs. Here's what I offer 👇
+
+📄 CV & Cover Letters — from KES 800
+📊 Business Proposals (bank, investor, tender) — from KES 5,000
+🏫 School Documents (report comments, prospectus) — from KES 3,000
+🤝 SACCO Newsletters & Member Communications — from KES 3,000
+📱 Social Media Content (30 posts/month) — from KES 4,000
+🏠 Landlord Documents (tenancy agreements) — from KES 3,000
+🚚 Export & Trade Documents — from KES 5,000
+
+All delivered remotely within 24–48 hours.
+Payment via M-Pesa. One free revision on every order.
+
+👉 ashiruma.github.io/nexdocs
+📲 +254 719 317 559</div>
+      </div>
+      <div class="tip">💡 Sunday posts in business groups get high engagement. Pin this as a comment on your earlier posts too.</div>
+    </div>
+  </div>
+
+  <!-- WEEK 2 -->
+  <div class="week-label" data-week="week2">Week Two <span>Days 8–14 · SACCO, Clinics & Value Posts</span></div>
+
+  <!-- DAY 8 -->
+  <div class="day-card" data-week="week2" id="card-8">
+    <div class="day-header" onclick="toggleDay(8)">
+      <div class="day-num">08</div>
+      <div class="day-meta">
+        <div class="day-title">SACCO Communications</div>
+        <div class="day-tags"><span class="tag fb">Facebook</span><span class="tag service">SACCOs</span></div>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="day-body">
+      <div class="msg-section">
+        <div class="msg-label"><span class="dot wa"></span> WhatsApp Status</div>
+        <div class="msg-box"><button class="copy-btn" onclick="copyMsg(this)">Copy</button>SACCOs — your members deserve clear communication.
+
+I write newsletters, loan reminders & FAQs that members actually read.
+
+From KES 3,000. ashiruma.github.io/nexdocs</div>
+      </div>
+      <div class="msg-section">
+        <div class="msg-label"><span class="dot fb"></span> Facebook Group Post</div>
+        <div class="msg-box"><button class="copy-btn" onclick="copyMsg(this)">Copy</button>SACCO managers & co-operative leaders in Kenya 👋
+
+How much time does your team spend every month writing member communications — newsletters, loan reminders, AGM notices, FAQs?
+
+I can take that off your plate completely.
+
+I provide:
+📰 Monthly Member Newsletter — KES 4,000 (retainer KES 2,500/mo)
+📲 Loan Reminder Message Sequence — KES 3,000
+📋 Member FAQ Document — KES 3,500
+📢 AGM Notice & Agenda — KES 2,500
+
+All delivered within 48 hours. Professional, clear, and tailored to your SACCO.
+
+Interested? DM me or visit:
+👉 ashiruma.github.io/nexdocs</div>
+      </div>
+      <div class="tip">💡 Find SACCO contacts at sasra.go.ke or search "[County] SACCO" on Facebook and Google.</div>
+    </div>
+  </div>
+
+  <!-- DAY 9 -->
+  <div class="day-card" data-week="week2" id="card-9">
+    <div class="day-header" onclick="toggleDay(9)">
+      <div class="day-num">09</div>
+      <div class="day-meta">
+        <div class="day-title">Free Value — CV Writing Tips</div>
+        <div class="day-tags"><span class="tag fb">Facebook</span><span class="tag service">CV Writing</span></div>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="day-body">
+      <div class="msg-section">
+        <div class="msg-label"><span class="dot wa"></span> WhatsApp Status</div>
+        <div class="msg-box"><button class="copy-btn" onclick="copyMsg(this)">Copy</button>Free CV tip:
+
+Never write "References available upon request."
+
+Recruiters know this. It wastes space. Use that line to add a skill or achievement instead.
+
+Need a full CV rewrite? KES 800. ashiruma.github.io/nexdocs</div>
+      </div>
+      <div class="msg-section">
+        <div class="msg-label"><span class="dot fb"></span> Facebook Group Post</div>
+        <div class="msg-box"><button class="copy-btn" onclick="copyMsg(this)">Copy</button>5 things that are silently killing your CV 👇
+
+1. Using "Responsible for..." — say what you ACHIEVED instead
+2. No quantified results — "Increased sales by 30%" beats "Managed sales"
+3. Too long — unless you have 10+ years, 2 pages maximum
+4. Unprofessional email — create a <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d2b4bba0a1a6bcb3bfb7fcbeb3a1a6bcb3bfb792b5bfb3bbbefcb1bdbf">[email&#160;protected]</a>
+5. No ATS formatting — fancy tables and columns confuse screening software
+
+Fix all of these and your callback rate will improve immediately.
+
+If you'd rather have a professional do it:
+✅ CV rewrite from KES 800
+✅ Delivered in 24 hours
+✅ ashiruma.github.io/nexdocs</div>
+      </div>
+      <div class="tip">💡 Value posts like this get shared — which brings people to your page who didn't see your service posts.</div>
+    </div>
+  </div>
+
+  <!-- DAY 10 -->
+  <div class="day-card" data-week="week2" id="card-10">
+    <div class="day-header" onclick="toggleDay(10)">
+      <div class="day-num">10</div>
+      <div class="day-meta">
+        <div class="day-title">Clinic & Health Business Content</div>
+        <div class="day-tags"><span class="tag both">Both</span><span class="tag service">Social Media</span></div>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="day-body">
+      <div class="msg-section">
+        <div class="msg-label"><span class="dot wa"></span> WhatsApp Status</div>
+        <div class="msg-box"><button class="copy-btn" onclick="copyMsg(this)">Copy</button>Clinics & chemists — is your Facebook page active?
+
+Patients check online before visiting. I write 30 health posts for your page.
+
+KES 4,000/month. ashiruma.github.io/nexdocs</div>
+      </div>
+      <div class="msg-section">
+        <div class="msg-label"><span class="dot fb"></span> Facebook Group Post</div>
+        <div class="msg-box"><button class="copy-btn" onclick="copyMsg(this)">Copy</button>Health businesses in Kenya 🏥 — clinics, chemists, nutrition shops, wellness centres.
+
+Your patients are on Facebook and WhatsApp every day. If your page is inactive, you are invisible to new customers.
+
+I write 30 ready-to-post health tips and service content for your business every month — you just copy and paste.
+
+✅ Health tips that educate your audience
+✅ Service highlights that attract new patients
+✅ Appointment reminders that reduce no-shows
+✅ Formatted for Facebook & WhatsApp Status
+
+KES 4,000/month — less than KES 135 per day.
+
+DM me and I'll send you 3 FREE sample posts for your business. No payment needed.
+👉 ashiruma.github.io/nexdocs</div>
+      </div>
+      <div class="tip">💡 The free 3-post offer converts very well. Message clinic Facebook pages directly with this.</div>
+    </div>
+  </div>
+
+  <!-- DAY 11 -->
+  <div class="day-card" data-week="week2" id="card-11">
+    <div class="day-header" onclick="toggleDay(11)">
+      <div class="day-num">11</div>
+      <div class="day-meta">
+        <div class="day-title">Fish Traders & Export (Kisumu Focus)</div>
+        <div class="day-tags"><span class="tag both">Both</span><span class="tag service">Export Docs</span></div>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="day-body">
+      <div class="msg-section">
+        <div class="msg-label"><span class="dot wa"></span> WhatsApp Status</div>
+        <div class="msg-box"><button class="copy-btn" onclick="copyMsg(this)">Copy</button>Wakulima na wafanyabiashara wa samaki — Ziwa Victoria.
+
+Ninaandika maombi ya biashara, mikopo na usafirishaji nje.
+
+Bei: KES 5,000–12,000. ashiruma.github.io/nexdocs</div>
+      </div>
+      <div class="msg-section">
+        <div class="msg-label"><span class="dot fb"></span> Facebook Group Post</div>
+        <div class="msg-box"><button class="copy-btn" onclick="copyMsg(this)">Copy</button>Fish traders, exporters & agribusiness owners around Lake Victoria & Western Kenya 🐟
+
+Do you need professional documents to:
+- Apply for a bank loan or SACCO financing?
+- Present your business to investors or buyers?
+- Export fish or agricultural products formally?
+
+I write business proposals, export documentation support, and trade communications — professionally formatted and delivered within 3 days.
+
+Starting from KES 5,000. M-Pesa payment.
+
+DM me in English or Swahili — whichever is comfortable.
+👉 ashiruma.github.io/nexdocs
+📲 +254 719 317 559</div>
+      </div>
+      <div class="tip">💡 Post in Kisumu-specific Facebook groups and fishing community groups around Lake Victoria.</div>
+    </div>
+  </div>
+
+  <!-- DAY 12 -->
+  <div class="day-card" data-week="week2" id="card-12">
+    <div class="day-header" onclick="toggleDay(12)">
+      <div class="day-num">12</div>
+      <div class="day-meta">
+        <div class="day-title">Free Value — Proposal Writing Tips</div>
+        <div class="day-tags"><span class="tag fb">Facebook</span><span class="tag service">Proposals</span></div>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="day-body">
+      <div class="msg-section">
+        <div class="msg-label"><span class="dot wa"></span> WhatsApp Status</div>
+        <div class="msg-box"><button class="copy-btn" onclick="copyMsg(this)">Copy</button>Free tip for business owners:
+
+A bank loan proposal needs 3 things above all else:
+1. Clear business description
+2. Realistic financial projections
+3. Repayment plan
+
+Missing any one = rejection.
+
+Need help? KES 5,000. ashiruma.github.io/nexdocs</div>
+      </div>
+      <div class="msg-section">
+        <div class="msg-label"><span class="dot fb"></span> Facebook Group Post</div>
+        <div class="msg-box"><button class="copy-btn" onclick="copyMsg(this)">Copy</button>Why most business proposals get rejected by Kenyan banks 👇
+
+After writing proposals that have been approved, here's what I've learned:
+
+❌ Too vague — "My business will serve customers in Nairobi" tells a banker nothing
+❌ No numbers — if you can't project revenue, they won't lend
+❌ No repayment plan — banks want to see HOW you'll pay back, not just that you will
+❌ Poor formatting — a messy document signals a messy business
+
+The good news? All of this is fixable.
+
+I write business proposals from KES 5,000 that are structured the way Kenyan banks and SACCOs want to see them.
+
+DM me with your business idea. Let's talk.
+👉 ashiruma.github.io/nexdocs</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DAY 13 -->
+  <div class="day-card" data-week="week2" id="card-13">
+    <div class="day-header" onclick="toggleDay(13)">
+      <div class="day-num">13</div>
+      <div class="day-meta">
+        <div class="day-title">Referral Push</div>
+        <div class="day-tags"><span class="tag both">Both</span><span class="tag service">All Services</span></div>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="day-body">
+      <div class="msg-section">
+        <div class="msg-label"><span class="dot wa"></span> WhatsApp Status</div>
+        <div class="msg-box"><button class="copy-btn" onclick="copyMsg(this)">Copy</button>Know someone looking for a job? Send them my way.
+
+I'll give them KES 200 off their first CV order — and I'll remember you referred them 🙏
+
+ashiruma.github.io/nexdocs</div>
+      </div>
+      <div class="msg-section">
+        <div class="msg-label"><span class="dot fb"></span> Facebook Group Post</div>
+        <div class="msg-box"><button class="copy-btn" onclick="copyMsg(this)">Copy</button>Tag a friend who needs one of these 👇
+
+📄 A new CV — they've been job hunting too long
+📊 A business proposal — they have a great idea but can't write it
+🏠 A tenancy agreement — they're a landlord without proper documents
+📱 Social media content — their business page has been dead for months
+
+I provide all of this remotely, fast, and affordably.
+
+Tagging = helping your people 💪
+👉 ashiruma.github.io/nexdocs</div>
+      </div>
+      <div class="tip">💡 "Tag a friend" posts get massive organic reach. This is one of your best posts for going viral.</div>
+    </div>
+  </div>
+
+  <!-- DAY 14 -->
+  <div class="day-card" data-week="week2" id="card-14">
+    <div class="day-header" onclick="toggleDay(14)">
+      <div class="day-num">14</div>
+      <div class="day-meta">
+        <div class="day-title">2-Week Milestone Post</div>
+        <div class="day-tags"><span class="tag both">Both</span><span class="tag service">All Services</span></div>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="day-body">
+      <div class="msg-section">
+        <div class="msg-label"><span class="dot wa"></span> WhatsApp Status</div>
+        <div class="msg-box"><button class="copy-btn" onclick="copyMsg(this)">Copy</button>2 weeks of NexDocs. Still here. Still delivering 💪
+
+If you've been thinking about it — now is the time.
+ashiruma.github.io/nexdocs</div>
+      </div>
+      <div class="msg-section">
+        <div class="msg-label"><span class="dot fb"></span> Facebook Group Post</div>
+        <div class="msg-box"><button class="copy-btn" onclick="copyMsg(this)">Copy</button>2 weeks in 🎉
+
+To everyone who has supported, shared, or become a client — thank you.
+
+NexDocs is still open and delivering:
+
+📄 CVs from KES 800
+📊 Business proposals from KES 5,000
+🏫 School documents from KES 3,000
+🤝 SACCO communications from KES 3,000
+📱 Social media content from KES 4,000/mo
+🏠 Landlord documents from KES 3,000
+
+Remote. Fast. Reliable. M-Pesa.
+
+If there's a document or communication task on your to-do list that you haven't done — I'm here.
+👉 ashiruma.github.io/nexdocs</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WEEK 3 -->
+  <div class="week-label" data-week="week3">Week Three <span>Days 15–21 · Objections, Value & Urgency</span></div>
+
+  <!-- DAY 15 -->
+  <div class="day-card" data-week="week3" id="card-15">
+    <div class="day-header" onclick="toggleDay(15)">
+      <div class="day-num">15</div>
+      <div class="day-meta">
+        <div class="day-title">Handle Objection — "Is it worth it?"</div>
+        <div class="day-tags"><span class="tag fb">Facebook</span><span class="tag service">CV Writing</span></div>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="day-body">
+      <div class="msg-section">
+        <div class="msg-label"><span class="dot wa"></span> WhatsApp Status</div>
+        <div class="msg-box"><button class="copy-btn" onclick="copyMsg(this)">Copy</button>KES 800 for a CV sounds expensive until you realise one job offer can pay you KES 30,000/month.
+
+The maths works. ashiruma.github.io/nexdocs</div>
+      </div>
+      <div class="msg-section">
+        <div class="msg-label"><span class="dot fb"></span> Facebook Group Post</div>
+        <div class="msg-box"><button class="copy-btn" onclick="copyMsg(this)">Copy</button>I know what some people are thinking:
+
+"Is a professional CV really worth KES 800?"
+
+Let me do the maths with you:
+
+A professionally written CV gets you more interview calls.
+One interview call can lead to a job offer.
+An entry-level job in Kenya pays KES 25,000–50,000/month.
+
+You spend KES 800 once. You potentially gain KES 300,000+ per year.
+
+That's not an expense. That's an investment.
+
+If you've been on the fence, this is your sign.
+✅ Professional CV from KES 800
+✅ Delivered in 24 hours
+✅ M-Pesa
+👉 ashiruma.github.io/nexdocs</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DAY 16 -->
+  <div class="day-card" data-week="week3" id="card-16">
+    <div class="day-header" onclick="toggleDay(16)">
+      <div class="day-num">16</div>
+      <div class="day-meta">
+        <div class="day-title">Behind the Scenes — Your Process</div>
+        <div class="day-tags"><span class="tag fb">Facebook</span><span class="tag service">Trust Building</span></div>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="day-body">
+      <div class="msg-section">
+        <div class="msg-label"><span class="dot wa"></span> WhatsApp Status</div>
+        <div class="msg-box"><button class="copy-btn" onclick="copyMsg(this)">Copy</button>Here's how I work:
+
+1. You send me your details
+2. I send a price & timeline within 2 hours
+3. You pay via M-Pesa
+4. Document delivered in 24–48hrs
+
+That's it. ashiruma.github.io/nexdocs</div>
+      </div>
+      <div class="msg-section">
+        <div class="msg-label"><span class="dot fb"></span> Facebook Group Post</div>
+        <div class="msg-box"><button class="copy-btn" onclick="copyMsg(this)">Copy</button>How NexDocs works — for those wondering 👇
+
+Step 1: You WhatsApp or DM me with what you need
+Step 2: I reply within 2 hours with a quote and delivery time
+Step 3: You approve and pay via M-Pesa
+Step 4: I deliver your document in 24–48 hours
+Step 5: You review — if anything needs changing, one free revision is included
+
+No hidden fees. No meetings needed. No delays.
+
+Everything happens on your phone.
+
+Ready to start? 👉 ashiruma.github.io/nexdocs
+📲 +254 719 317 559</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DAY 17 -->
+  <div class="day-card" data-week="week3" id="card-17">
+    <div class="day-header" onclick="toggleDay(17)">
+      <div class="day-num">17</div>
+      <div class="day-meta">
+        <div class="day-title">Fresh Graduates — Special Post</div>
+        <div class="day-tags"><span class="tag both">Both</span><span class="tag service">CV Writing</span></div>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="day-body">
+      <div class="msg-section">
+        <div class="msg-label"><span class="dot wa"></span> WhatsApp Status</div>
+        <div class="msg-box"><button class="copy-btn" onclick="copyMsg(this)">Copy</button>Just graduated? Competing with hundreds for the same jobs?
+
+Your CV is your first impression. Make it count.
+
+KES 800. 24hrs. ashiruma.github.io/nexdocs</div>
+      </div>
+      <div class="msg-section">
+        <div class="msg-label"><span class="dot fb"></span> Facebook Group Post</div>
+        <div class="msg-box"><button class="copy-btn" onclick="copyMsg(this)">Copy</button>Fresh graduates in Kenya — this one is for you 🎓
+
+You've worked hard for that degree or diploma. But so has everyone else applying for the same 50 jobs.
+
+The difference between getting called and being ignored is often just the CV.
+
+I help fresh graduates write:
+✅ Clean, professional 1-page CVs
+✅ Compelling cover letters
+✅ LinkedIn profiles that get noticed
+
+You don't have years of experience — but you can still have the best-presented application in the pile.
+
+From KES 800. Delivered in 24 hours. M-Pesa.
+
+DM me or visit: ashiruma.github.io/nexdocs</div>
+      </div>
+      <div class="tip">💡 Post this in university alumni groups and campus Facebook pages — Maseno, Kisumu polytechnics, etc.</div>
+    </div>
+  </div>
+
+  <!-- DAY 18 -->
+  <div class="day-card" data-week="week3" id="card-18">
+    <div class="day-header" onclick="toggleDay(18)">
+      <div class="day-num">18</div>
+      <div class="day-meta">
+        <div class="day-title">SME Social Media Content Offer</div>
+        <div class="day-tags"><span class="tag both">Both</span><span class="tag service">Social Media</span></div>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="day-body">
+      <div class="msg-section">
+        <div class="msg-label"><span class="dot wa"></span> WhatsApp Status</div>
+        <div class="msg-box"><button class="copy-btn" onclick="copyMsg(this)">Copy</button>Your business Facebook page hasn't posted in 3 weeks.
+
+Your competitor's has.
+
+30 posts/month. KES 4,000. ashiruma.github.io/nexdocs</div>
+      </div>
+      <div class="msg-section">
+        <div class="msg-label"><span class="dot fb"></span> Facebook Group Post</div>
+        <div class="msg-box"><button class="copy-btn" onclick="copyMsg(this)">Copy</button>Small business owners in Kenya — honest question 👇
+
+When did you last post on your Facebook or WhatsApp business page?
+
+If it's been more than 2 weeks, customers are going to your competitors who ARE posting.
+
+I write 30 ready-to-copy-paste posts for your business every month. You don't need to write a word — just copy and post.
+
+Works for:
+🏪 Shops & retail
+🏥 Clinics & chemists
+🍽️ Restaurants & food businesses
+🏫 Schools & tutoring centres
+🏠 Property & rental businesses
+
+KES 4,000/month. Less than KES 140 per day.
+
+DM me for 3 FREE sample posts for your business — zero obligation.
+👉 ashiruma.github.io/nexdocs</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DAY 19 -->
+  <div class="day-card" data-week="week3" id="card-19">
+    <div class="day-header" onclick="toggleDay(19)">
+      <div class="day-num">19</div>
+      <div class="day-meta">
+        <div class="day-title">Urgency Post — Limited Slots</div>
+        <div class="day-tags"><span class="tag both">Both</span><span class="tag service">All Services</span></div>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="day-body">
+      <div class="msg-section">
+        <div class="msg-label"><span class="dot wa"></span> WhatsApp Status</div>
+        <div class="msg-box"><button class="copy-btn" onclick="copyMsg(this)">Copy</button>This week I can take 5 new clients.
+
+CV · Proposal · School docs · Social media content
+
+First come, first served.
+ashiruma.github.io/nexdocs</div>
+      </div>
+      <div class="msg-section">
+        <div class="msg-label"><span class="dot fb"></span> Facebook Group Post</div>
+        <div class="msg-box"><button class="copy-btn" onclick="copyMsg(this)">Copy</button>Heads up ⚠️
+
+This week I'm taking on a limited number of new orders to maintain quality and fast delivery.
+
+If you've been thinking about:
+📄 Getting your CV rewritten
+📊 Writing that business proposal
+🏫 Getting your school's end-term reports done
+📱 Starting a content plan for your business
+
+Now is the right time — before I'm fully booked.
+
+DM me today and I'll confirm availability.
+👉 ashiruma.github.io/nexdocs
+📲 +254 719 317 559</div>
+      </div>
+      <div class="tip">💡 Scarcity posts create urgency. Use this once a week maximum — overusing it loses the effect.</div>
+    </div>
+  </div>
+
+  <!-- DAY 20 -->
+  <div class="day-card" data-week="week3" id="card-20">
+    <div class="day-header" onclick="toggleDay(20)">
+      <div class="day-num">20</div>
+      <div class="day-meta">
+        <div class="day-title">Testimonial / Social Proof</div>
+        <div class="day-tags"><span class="tag both">Both</span><span class="tag service">Trust Building</span></div>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="day-body">
+      <div class="msg-section">
+        <div class="msg-label"><span class="dot wa"></span> WhatsApp Status</div>
+        <div class="msg-box"><button class="copy-btn" onclick="copyMsg(this)">Copy</button"Our bank was impressed with the proposal. We got the loan approved."
+
+— NexDocs client, Kisumu
+
+Your turn. ashiruma.github.io/nexdocs</div>
+      </div>
+      <div class="msg-section">
+        <div class="msg-label"><span class="dot fb"></span> Facebook Group Post</div>
+        <div class="msg-box"><button class="copy-btn" onclick="copyMsg(this)">Copy</button>Client result I'm proud of this week 🙏
+
+A small business owner in Kisumu needed a loan proposal for their fish processing business. They had the idea but couldn't put it into words clearly.
+
+We worked together to document their business, project the finances, and format it the way their SACCO wanted.
+
+Result: Loan approved.
+
+This is why I do this work — helping real Kenyans get access to opportunities through better documentation.
+
+If you have a business that needs a proposal:
+📊 From KES 5,000
+📲 +254 719 317 559
+👉 ashiruma.github.io/nexdocs</div>
+      </div>
+      <div class="tip">💡 Replace with a real client result if you have one by day 20 — real stories are 10x more powerful.</div>
+    </div>
+  </div>
+
+  <!-- DAY 21 -->
+  <div class="day-card" data-week="week3" id="card-21">
+    <div class="day-header" onclick="toggleDay(21)">
+      <div class="day-num">21</div>
+      <div class="day-meta">
+        <div class="day-title">3-Week Recap & Ask</div>
+        <div class="day-tags"><span class="tag both">Both</span><span class="tag service">All Services</span></div>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="day-body">
+      <div class="msg-section">
+        <div class="msg-label"><span class="dot wa"></span> WhatsApp Status</div>
+        <div class="msg-box"><button class="copy-btn" onclick="copyMsg(this)">Copy</button>3 weeks. Still delivering. Still growing.
+
+If you haven't tried NexDocs yet — what's stopping you?
+ashiruma.github.io/nexdocs</div>
+      </div>
+      <div class="msg-section">
+        <div class="msg-label"><span class="dot fb"></span> Facebook Group Post</div>
+        <div class="msg-box"><button class="copy-btn" onclick="copyMsg(this)">Copy</button>3 weeks of NexDocs 🙏
+
+To everyone who has ordered, shared, or sent referrals — you are genuinely appreciated.
+
+Quick question for this group:
+
+What document or communication task have you been putting off that I could help you with?
+
+Drop it in the comments. No obligation — I'll give you a free quote right here.
+
+👉 ashiruma.github.io/nexdocs</div>
+      </div>
+      <div class="tip">💡 Asking a question in comments dramatically increases post reach on Facebook. This is a great engagement post.</div>
+    </div>
+  </div>
+
+  <!-- WEEK 4 -->
+  <div class="week-label" data-week="week4">Week Four <span>Days 22–30 · Momentum, Viral & Close Strong</span></div>
+
+  <!-- DAY 22 -->
+  <div class="day-card" data-week="week4" id="card-22">
+    <div class="day-header" onclick="toggleDay(22)">
+      <div class="day-num">22</div>
+      <div class="day-meta">
+        <div class="day-title">Relatable Pain — The Job Hunt Struggle</div>
+        <div class="day-tags"><span class="tag fb">Facebook</span><span class="tag service">CV Writing</span></div>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="day-body">
+      <div class="msg-section">
+        <div class="msg-label"><span class="dot wa"></span> WhatsApp Status</div>
+        <div class="msg-box"><button class="copy-btn" onclick="copyMsg(this)">Copy</button>Applied to 20 jobs. Heard back from 0.
+
+That's not bad luck. That's a CV problem.
+
+Let's fix it. KES 800. ashiruma.github.io/nexdocs</div>
+      </div>
+      <div class="msg-section">
+        <div class="msg-label"><span class="dot fb"></span> Facebook Group Post</div>
+        <div class="msg-box"><button class="copy-btn" onclick="copyMsg(this)">Copy</button>The job market in Kenya is brutal right now.
+
+Hundreds of applicants per position. HR managers spending less than 10 seconds per CV.
+
+If you're not hearing back, I want you to know: it's probably not your qualifications. It's how you're presenting them.
+
+I've helped people go from:
+❌ 0 responses in 3 months → ✅ 2 interview calls in one week
+
+All I changed was the CV.
+
+If you're ready to stop waiting and start getting called:
+📄 Professional CV from KES 800
+✅ 24-hour delivery
+✅ M-Pesa payment
+✅ One free revision
+
+DM me. Let's get you that interview.
+👉 ashiruma.github.io/nexdocs</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DAY 23 -->
+  <div class="day-card" data-week="week4" id="card-23">
+    <div class="day-header" onclick="toggleDay(23)">
+      <div class="day-num">23</div>
+      <div class="day-meta">
+        <div class="day-title">Bundle Offer — Best Value</div>
+        <div class="day-tags"><span class="tag both">Both</span><span class="tag service">All Services</span></div>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="day-body">
+      <div class="msg-section">
+        <div class="msg-label"><span class="dot wa"></span> WhatsApp Status</div>
+        <div class="msg-box"><button class="copy-btn" onclick="copyMsg(this)">Copy</button>Best value this week:
+
+CV + Cover Letter + LinkedIn rewrite = KES 3,000 (save KES 500)
+
+DM me to claim. ashiruma.github.io/nexdocs</div>
+      </div>
+      <div class="msg-section">
+        <div class="msg-label"><span class="dot fb"></span> Facebook Group Post</div>
+        <div class="msg-box"><button class="copy-btn" onclick="copyMsg(this)">Copy</button>This week only — Career Starter Bundle 🎯
+
+✅ Professional CV (2 pages, ATS-formatted)
+✅ Tailored Cover Letter
+✅ LinkedIn Profile Rewrite
+
+Normal price: KES 3,500
+Bundle price: KES 3,000
+
+That's everything you need to apply confidently — delivered in 24 hours.
+
+M-Pesa payment. One free revision included.
+
+Only available this week. DM me to book your spot.
+👉 ashiruma.github.io/nexdocs</div>
+      </div>
+      <div class="tip">💡 Bundle offers increase your average order value. "This week only" creates urgency without being pushy.</div>
+    </div>
+  </div>
+
+  <!-- DAY 24 -->
+  <div class="day-card" data-week="week4" id="card-24">
+    <div class="day-header" onclick="toggleDay(24)">
+      <div class="day-num">24</div>
+      <div class="day-meta">
+        <div class="day-title">Viral — Tag Challenge Post</div>
+        <div class="day-tags"><span class="tag fb">Facebook</span><span class="tag service">Viral</span></div>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="day-body">
+      <div class="msg-section">
+        <div class="msg-label"><span class="dot wa"></span> WhatsApp Status</div>
+        <div class="msg-box"><button class="copy-btn" onclick="copyMsg(this)">Copy</button>Someone you know needs this today.
+
+Tag them. You might change their week.
+ashiruma.github.io/nexdocs</div>
+      </div>
+      <div class="msg-section">
+        <div class="msg-label"><span class="dot fb"></span> Facebook Group Post</div>
+        <div class="msg-box"><button class="copy-btn" onclick="copyMsg(this)">Copy</button>Tag someone who needs this RIGHT NOW 👇
+
+@ someone who has been job hunting for months — I'll fix their CV
+@ a business owner who needs a bank loan proposal — I'll write it
+@ a teacher dreading end-term report comments — I'll do the whole class
+@ a landlord without a proper tenancy agreement — I'll draft it today
+@ a small business whose Facebook page is dead — I'll bring it to life
+
+One tag could genuinely help them. Go 💪
+
+👉 ashiruma.github.io/nexdocs
+📲 +254 719 317 559</div>
+      </div>
+      <div class="tip">💡 This is your highest-potential viral post. Tag posts regularly get 3–10x the organic reach of normal posts. Post in your biggest groups.</div>
+    </div>
+  </div>
+
+  <!-- DAY 25 -->
+  <div class="day-card" data-week="week4" id="card-25">
+    <div class="day-header" onclick="toggleDay(25)">
+      <div class="day-num">25</div>
+      <div class="day-meta">
+        <div class="day-title">University Student Recruitment</div>
+        <div class="day-tags"><span class="tag fb">Facebook</span><span class="tag service">CV Writing</span></div>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="day-body">
+      <div class="msg-section">
+        <div class="msg-label"><span class="dot wa"></span> WhatsApp Status</div>
+        <div class="msg-box"><button class="copy-btn" onclick="copyMsg(this)">Copy</button>Campus students — internship applications open soon.
+
+Don't wait. Get your CV ready now.
+
+KES 800. 24hrs. ashiruma.github.io/nexdocs</div>
+      </div>
+      <div class="msg-section">
+        <div class="msg-label"><span class="dot fb"></span> Facebook Group Post</div>
+        <div class="msg-box"><button class="copy-btn" onclick="copyMsg(this)">Copy</button>University & college students in Kenya 🎓
+
+Internship season is coming. Attachment season is coming. Graduation is coming.
+
+Are you prepared?
+
+Many students apply for internships with the same CV they've had since Form 4 — or worse, no CV at all.
+
+I write student and graduate CVs that stand out from the pile:
+✅ Highlights your academic achievements properly
+✅ Shows your skills even without work experience
+✅ Professional format that HR actually reads
+✅ Includes a cover letter tailored to the role
+
+From KES 800. Delivered in 24 hours.
+
+DM me or share with a classmate who needs this.
+👉 ashiruma.github.io/nexdocs</div>
+      </div>
+      <div class="tip">💡 Post in Maseno University, Kisumu National Polytechnic and other campus Facebook groups.</div>
+    </div>
+  </div>
+
+  <!-- DAY 26 -->
+  <div class="day-card" data-week="week4" id="card-26">
+    <div class="day-header" onclick="toggleDay(26)">
+      <div class="day-num">26</div>
+      <div class="day-meta">
+        <div class="day-title">Real Talk — Why I Started</div>
+        <div class="day-tags"><span class="tag fb">Facebook</span><span class="tag service">Trust Building</span></div>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="day-body">
+      <div class="msg-section">
+        <div class="msg-label"><span class="dot wa"></span> WhatsApp Status</div>
+        <div class="msg-box"><button class="copy-btn" onclick="copyMsg(this)">Copy</button>I started NexDocs because I saw how many Kenyans have the skills, the ideas, the hustle — but lose opportunities due to poor paperwork.
+
+That's fixable. That's what I do.
+ashiruma.github.io/nexdocs</div>
+      </div>
+      <div class="msg-section">
+        <div class="msg-label"><span class="dot fb"></span> Facebook Group Post</div>
+        <div class="msg-box"><button class="copy-btn" onclick="copyMsg(this)">Copy</button>Why I started NexDocs — the honest version.
+
+I kept seeing people around me lose opportunities — not because they weren't qualified or hardworking, but because of paperwork.
+
+A weak CV. A poorly written proposal. No tenancy agreement. A social media page that looked abandoned.
+
+Small things that cost big opportunities.
+
+I realised I could fix that. So I did.
+
+Nearly a month later, I'm still here — helping Kenyans put their best foot forward on paper, remotely, affordably, and fast.
+
+If you've ever lost an opportunity because of documentation, I'm here to make sure that doesn't happen again.
+
+👉 ashiruma.github.io/nexdocs
+📲 +254 719 317 559</div>
+      </div>
+      <div class="tip">💡 Authentic "why I started" posts build deep trust. Don't be afraid to be real — people buy from people they connect with.</div>
+    </div>
+  </div>
+
+  <!-- DAY 27 -->
+  <div class="day-card" data-week="week4" id="card-27">
+    <div class="day-header" onclick="toggleDay(27)">
+      <div class="day-num">27</div>
+      <div class="day-meta">
+        <div class="day-title">Free Value — Social Media Tips for SMEs</div>
+        <div class="day-tags"><span class="tag fb">Facebook</span><span class="tag service">Social Media</span></div>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="day-body">
+      <div class="msg-section">
+        <div class="msg-label"><span class="dot wa"></span> WhatsApp Status</div>
+        <div class="msg-box"><button class="copy-btn" onclick="copyMsg(this)">Copy</button>Free tip for business owners:
+
+Post consistently > post perfectly.
+
+3 average posts per week beats 1 perfect post per month — every time.
+
+Need help posting consistently? KES 4,000/mo. ashiruma.github.io/nexdocs</div>
+      </div>
+      <div class="msg-section">
+        <div class="msg-label"><span class="dot fb"></span> Facebook Group Post</div>
+        <div class="msg-box"><button class="copy-btn" onclick="copyMsg(this)">Copy</button>5 social media mistakes Kenyan businesses make 👇
+
+1. Posting only when you want to sell — people follow for value, not adverts
+2. Going silent for weeks — consistency beats perfection every time
+3. No call to action — always tell people what to do next
+4. Ignoring comments — replying to comments doubles your reach
+5. No contact info in the post — make it easy for people to reach you
+
+If your business is making even 2 of these mistakes, you're leaving customers on the table.
+
+I create 30 posts/month that avoid all of these — professionally written for your specific business.
+
+KES 4,000/month. DM me for 3 free samples.
+👉 ashiruma.github.io/nexdocs</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DAY 28 -->
+  <div class="day-card" data-week="week4" id="card-28">
+    <div class="day-header" onclick="toggleDay(28)">
+      <div class="day-num">28</div>
+      <div class="day-meta">
+        <div class="day-title">Final Urgency — End of Month</div>
+        <div class="day-tags"><span class="tag both">Both</span><span class="tag service">All Services</span></div>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="day-body">
+      <div class="msg-section">
+        <div class="msg-label"><span class="dot wa"></span> WhatsApp Status</div>
+        <div class="msg-box"><button class="copy-btn" onclick="copyMsg(this)">Copy</button>End of month. New month coming.
+
+Start it with a professional CV. A strong proposal. A system that works for you.
+
+ashiruma.github.io/nexdocs</div>
+      </div>
+      <div class="msg-section">
+        <div class="msg-label"><span class="dot fb"></span> Facebook Group Post</div>
+        <div class="msg-box"><button class="copy-btn" onclick="copyMsg(this)">Copy</button>New month starts in a few days.
+
+What's one thing you've been meaning to get done — but haven't?
+
+If it's on this list, I can help:
+
+📄 Update your CV before the next job posting
+📊 Write that business proposal for the loan you need
+🏠 Get a proper tenancy agreement before the next tenant moves in
+📱 Set up a consistent social media presence for your business
+🏫 Clear your school's document backlog before term ends
+
+Name the task. I'll give you a quote right here in the comments.
+
+👉 ashiruma.github.io/nexdocs
+📲 +254 719 317 559</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DAY 29 -->
+  <div class="day-card" data-week="week4" id="card-29">
+    <div class="day-header" onclick="toggleDay(29)">
+      <div class="day-num">29</div>
+      <div class="day-meta">
+        <div class="day-title">Big Tag Post — Maximum Reach</div>
+        <div class="day-tags"><span class="tag fb">Facebook</span><span class="tag service">Viral</span></div>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="day-body">
+      <div class="msg-section">
+        <div class="msg-label"><span class="dot wa"></span> WhatsApp Status</div>
+        <div class="msg-box"><button class="copy-btn" onclick="copyMsg(this)">Copy</button>One month of NexDocs. Grateful for every client, every share, every kind word.
+
+Still open. Still delivering. Still going.
+ashiruma.github.io/nexdocs</div>
+      </div>
+      <div class="msg-section">
+        <div class="msg-label"><span class="dot fb"></span> Facebook Group Post</div>
+        <div class="msg-box"><button class="copy-btn" onclick="copyMsg(this)">Copy</button>Almost one month. Let's end it big. 💪
+
+I need your help to reach the right people.
+
+SHARE this post if you know someone who needs:
+
+📄 A professional CV — they've been job hunting too long
+📊 A business proposal — they have a great idea and need funding
+🏫 School document help — report comments, prospectus, fee reminders
+🤝 SACCO or co-op communications — newsletters, reminders, AGM docs
+📱 Social media content — their business page needs life
+🏠 Landlord documents — proper agreements, not just verbal contracts
+🚢 Export/trade documents — they're a trader ready to go formal
+
+Every share reaches someone I can actually help.
+
+Thank you in advance 🙏
+👉 ashiruma.github.io/nexdocs</div>
+      </div>
+      <div class="tip">💡 This is your biggest reach post of the month. Post it in every group you're in. This is the one most likely to go viral.</div>
+    </div>
+  </div>
+
+  <!-- DAY 30 -->
+  <div class="day-card" data-week="week4" id="card-30">
+    <div class="day-header" onclick="toggleDay(30)">
+      <div class="day-num">30</div>
+      <div class="day-meta">
+        <div class="day-title">Day 30 — Celebrate & Announce Month 2</div>
+        <div class="day-tags"><span class="tag both">Both</span><span class="tag service">All Services</span></div>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="day-body">
+      <div class="msg-section">
+        <div class="msg-label"><span class="dot wa"></span> WhatsApp Status</div>
+        <div class="msg-box"><button class="copy-btn" onclick="copyMsg(this)">Copy</button>Day 30. ✅
+
+30 days of showing up. 30 days of delivering. Month 2 starts tomorrow.
+
+If you haven't worked with NexDocs yet — month 2 is your chance.
+ashiruma.github.io/nexdocs</div>
+      </div>
+      <div class="msg-section">
+        <div class="msg-label"><span class="dot fb"></span> Facebook Group Post</div>
+        <div class="msg-box"><button class="copy-btn" onclick="copyMsg(this)">Copy</button>Day 30. We made it. 🎉
+
+30 days ago I launched NexDocs with one goal: to help Kenyans stop losing opportunities because of poor documentation.
+
+Here's what Month 2 looks like:
+
+✅ Same quality
+✅ Same prices
+✅ Same fast delivery
+🆕 More services being added
+🆕 More groups being served
+
+To everyone who supported — THANK YOU. You made this real.
+
+To everyone still on the fence — Month 2 is the perfect time to start.
+
+📄 CVs from KES 800
+📊 Proposals from KES 5,000
+🏫 School docs from KES 3,000
+📱 Social media from KES 4,000/mo
+
+👉 ashiruma.github.io/nexdocs
+📲 +254 719 317 559</div>
+      </div>
+      <div class="tip">💡 Day 30 posts perform extremely well. People love a milestone story. Boost this one if you can — even KES 500 in Facebook ads on this post will get you far.</div>
+    </div>
+  </div>
+
+  <!-- FOOTER NOTE -->
+  <div style="background:var(--ink); color:var(--cream); padding:2rem; margin-top:3rem; text-align:center;">
+    <p style="font-family:'Playfair Display',serif; font-size:1.2rem; margin-bottom:0.5rem;">Repeat this calendar every month.</p>
+    <p style="color:#888; font-size:0.85rem;">Swap in real testimonials, update the milestone numbers, and the content stays fresh. Consistency over 90 days builds a real audience.</p>
+  </div>
+
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  // Toggle day cards
+  function toggleDay(n) {
+    const card = document.getElementById('card-' + n);
+    card.classList.toggle('open');
+  }
+
+  // Filter by week
+  function filterWeek(week, btn) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.day-card, .week-label').forEach(el => {
+      if (week === 'all') {
+        el.style.display = '';
+      } else {
+        el.style.display = (el.dataset.week === week) ? '' : 'none';
+      }
+    });
+  }
+
+  // Copy message
+  function copyMsg(btn) {
+    const box = btn.parentElement;
+    const text = box.innerText.replace('Copy', '').replace('Copied!', '').trim();
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = 'Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = 'Copy';
+        btn.classList.remove('copied');
+      }, 2000);
+    });
+  }
+
+  // Progress tracking using localStorage
+  function updateProgress() {
+    const done = JSON.parse(localStorage.getItem('nexdocs-done') || '[]');
+    const fill = document.getElementById('progress-fill');
+    const count = document.getElementById('done-count');
+    fill.style.width = (done.length / 30 * 100) + '%';
+    count.textContent = done.length;
+  }
+
+  // Add checkboxes to day headers
+  document.querySelectorAll('.day-header').forEach((header, i) => {
+    const n = i + 1;
+    const done = JSON.parse(localStorage.getItem('nexdocs-done') || '[]');
+    const cb = document.createElement('input');
+    cb.type = 'checkbox';
+    cb.checked = done.includes(n);
+    cb.style.cssText = 'width:18px;height:18px;cursor:pointer;accent-color:#C9A84C;flex-shrink:0;';
+    cb.addEventListener('change', (e) => {
+      e.stopPropagation();
+      let d = JSON.parse(localStorage.getItem('nexdocs-done') || '[]');
+      if (cb.checked) { if (!d.includes(n)) d.push(n); }
+       else { d = d.filter(x => x !== n); }
+      localStorage.setItem('nexdocs-done', JSON.stringify(d));
+      updateProgress();
+    });
+    header.insertBefore(cb, header.firstChild);
+  });
+
+  updateProgress();
+</script>
+
+</div><!-- end main-content -->
+
+<script>
+  // Change "nexdocs2026" to any password you want
+  const SECRET = 'nexdocs2026';
+
+  function checkPw() {
+    const val = document.getElementById('pw-input').value;
+    if (val === SECRET) {
+      document.getElementById('gate').style.display = 'none';
+      document.getElementById('main-content').style.display = 'block';
+      sessionStorage.setItem('nexdocs-auth', '1');
+    } else {
+      document.getElementById('pw-error').style.display = 'block';
+      document.getElementById('pw-input').value = '';
+      document.getElementById('pw-input').focus();
+    }
+  }
+
+  // Auto-unlock if already authenticated this session
+  if (sessionStorage.getItem('nexdocs-auth') === '1') {
+    document.getElementById('gate').style.display = 'none';
+    document.getElementById('main-content').style.display = 'block';
+  }
+</script>
+
+</body>
+</html>
