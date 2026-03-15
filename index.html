@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>NexDocs | AI-Powered Document & Automation Services</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.383.0/umd/lucide.min.js"></script>
+<style>
+  :root {
+    --ink: #0D0D0D;
+    --cream: #F5F0E8;
+    --gold: #C9A84C;
+    --gold-light: #E8D5A3;
+    --rust: #B85C38;
+    --muted: #6B6560;
+    --card-bg: #FFFFFF;
+    --border: #E2DDD5;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    overflow-x: hidden;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; width: 100%; z-index: 100;
+    background: rgba(245,240,232,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 5%;
+    display: flex; justify-content: space-between; align-items: center;
+    height: 64px;
+  }
+  .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem; font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .logo span { color: var(--gold); }
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+  .nav-links a {
+    font-size: 0.85rem; font-weight: 500;
+    text-decoration: none; color: var(--muted);
+    letter-spacing: 0.04em; text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--ink); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex; align-items: center;
+    padding: 80px 5% 60px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; top: -100px; right: -100px;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(201,168,76,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero::after {
+    content: '"';
+    position: absolute; right: 5%; bottom: 10%;
+    font-family: 'Playfair Display', serif;
+    font-size: 25rem; font-weight: 900;
+    color: rgba(201,168,76,0.06);
+    line-height: 1; pointer-events: none;
+    user-select: none;
+  }
+  .hero-inner { max-width: 720px; }
+  .hero-badge {
+    display: inline-block;
+    background: var(--gold-light);
+    color: var(--ink);
+    font-size: 0.75rem; font-weight: 500;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 6px 16px; border-radius: 2px;
+    margin-bottom: 2rem;
+    animation: fadeUp 0.6s ease both;
+  }
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.8rem, 6vw, 5rem);
+    font-weight: 900; line-height: 1.05;
+    letter-spacing: -0.03em;
+    margin-bottom: 1.5rem;
+    animation: fadeUp 0.6s 0.1s ease both;
+  }
+  .hero h1 em { font-style: italic; color: var(--gold); }
+  .hero-sub {
+    font-size: 1.1rem; font-weight: 300;
+    color: var(--muted); line-height: 1.7;
+    max-width: 520px;
+    margin-bottom: 2.5rem;
+    animation: fadeUp 0.6s 0.2s ease both;
+  }
+  .hero-cta {
+    display: flex; gap: 1rem; flex-wrap: wrap;
+    animation: fadeUp 0.6s 0.3s ease both;
+  }
+  .btn-primary {
+    background: var(--ink); color: var(--cream);
+    padding: 14px 32px; border: none;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem; font-weight: 500;
+    letter-spacing: 0.04em; text-transform: uppercase;
+    cursor: pointer; text-decoration: none;
+    display: inline-block;
+    transition: background 0.2s, transform 0.2s;
+  }
+  .btn-primary:hover { background: var(--gold); color: var(--ink); transform: translateY(-2px); }
+  .btn-outline {
+    background: transparent; color: var(--ink);
+    padding: 14px 32px;
+    border: 1.5px solid var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem; font-weight: 500;
+    letter-spacing: 0.04em; text-transform: uppercase;
+    cursor: pointer; text-decoration: none;
+    display: inline-block;
+    transition: all 0.2s;
+  }
+  .btn-outline:hover { background: var(--ink); color: var(--cream); }
+
+  /* STATS BAR */
+  .stats-bar {
+    background: var(--ink);
+    padding: 2rem 5%;
+    display: flex; justify-content: space-around;
+    flex-wrap: wrap; gap: 1.5rem;
+  }
+  .stat { text-align: center; color: var(--cream); }
+  .stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2rem; font-weight: 700;
+    color: var(--gold);
+    display: block;
+  }
+  .stat-label { font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; color: #999; }
+
+  /* SECTION SHARED */
+  section { padding: 6rem 5%; }
+  .section-tag {
+    font-size: 0.75rem; font-weight: 500;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 1rem;
+    display: block;
+  }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+    font-weight: 700; line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin-bottom: 1rem;
+  }
+  .section-body {
+    font-size: 1rem; color: var(--muted);
+    line-height: 1.75; max-width: 560px;
+    margin-bottom: 3rem;
+  }
+
+  /* SERVICES */
+  #services { background: white; }
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5px;
+    background: var(--border);
+    border: 1.5px solid var(--border);
+  }
+  .service-card {
+    background: white;
+    padding: 2.5rem;
+    transition: background 0.2s;
+    cursor: default;
+  }
+  .service-card:hover { background: var(--cream); }
+  .service-icon {
+    width: 44px; height: 44px;
+    background: var(--gold-light);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 1.5rem;
+  }
+  .service-icon svg { width: 20px; height: 20px; stroke: var(--ink); stroke-width: 1.75; fill: none; }
+  .contact-icon-wrap {
+    width: 36px; height: 36px;
+    background: var(--gold-light);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .contact-icon-wrap svg { width: 16px; height: 16px; stroke: var(--ink); stroke-width: 1.75; fill: none; }
+  .service-card h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.15rem; font-weight: 700;
+    margin-bottom: 0.75rem;
+  }
+  .service-card p { font-size: 0.9rem; color: var(--muted); line-height: 1.65; }
+  .service-tag {
+    display: inline-block;
+    margin-top: 1.2rem;
+    font-size: 0.72rem; font-weight: 500;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--rust);
+    border-bottom: 1px solid var(--rust);
+    padding-bottom: 1px;
+  }
+
+  /* SAMPLES / PORTFOLIO */
+  #samples { background: var(--cream); }
+  .samples-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+  }
+  .sample-card {
+    background: white;
+    border: 1.5px solid var(--border);
+    padding: 2rem;
+    position: relative;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .sample-card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,0.08); }
+  .sample-type {
+    font-size: 0.7rem; font-weight: 500;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 0.75rem;
+    display: block;
+  }
+  .sample-card h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.05rem; font-weight: 700;
+    margin-bottom: 0.6rem;
+  }
+  .sample-card p { font-size: 0.88rem; color: var(--muted); line-height: 1.6; }
+  .sample-label {
+    position: absolute; top: 1.2rem; right: 1.2rem;
+    background: var(--ink); color: var(--cream);
+    font-size: 0.65rem; padding: 3px 8px;
+    letter-spacing: 0.06em; text-transform: uppercase;
+  }
+
+  /* PROCESS */
+  #process { background: var(--ink); color: var(--cream); }
+  #process .section-title { color: var(--cream); }
+  #process .section-body { color: #999; }
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 2rem;
+    counter-reset: steps;
+  }
+  .step {
+    border-top: 2px solid #333;
+    padding-top: 1.5rem;
+  }
+  .step::before {
+    counter-increment: steps;
+    content: "0" counter(steps);
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem; font-weight: 700;
+    color: var(--gold);
+    display: block; margin-bottom: 1rem;
+  }
+  .step h4 { font-size: 1rem; font-weight: 500; margin-bottom: 0.5rem; }
+  .step p { font-size: 0.88rem; color: #888; line-height: 1.6; }
+
+  /* TESTIMONIALS */
+  #testimonials { background: white; }
+  .testimonials-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+  }
+  .testimonial {
+    border-left: 3px solid var(--gold);
+    padding: 1.5rem 1.5rem 1.5rem 2rem;
+    background: var(--cream);
+  }
+  .testimonial p { font-size: 0.95rem; line-height: 1.7; color: var(--ink); font-style: italic; margin-bottom: 1rem; }
+  .testimonial-author { font-size: 0.8rem; font-weight: 500; color: var(--muted); letter-spacing: 0.04em; }
+
+  /* CONTACT */
+  #contact { background: var(--cream); }
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: start;
+  }
+  .contact-info h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem; font-weight: 700; margin-bottom: 1rem;
+  }
+  .contact-info p { font-size: 0.95rem; color: var(--muted); line-height: 1.7; margin-bottom: 2rem; }
+  .contact-detail {
+    display: flex; align-items: center; gap: 0.75rem;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+  }
+  .contact-form { display: flex; flex-direction: column; gap: 1rem; }
+  .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+  .form-group label { font-size: 0.8rem; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    padding: 12px 16px;
+    border: 1.5px solid var(--border);
+    background: white;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.2s;
+    resize: vertical;
+  }
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus { border-color: var(--gold); }
+
+  /* FOOTER */
+  footer {
+    background: var(--ink);
+    color: #666;
+    padding: 2.5rem 5%;
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 1rem;
+  }
+  footer .logo { color: var(--cream); }
+  footer p { font-size: 0.8rem; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 768px) {
+    .nav-links { display: none; }
+    .contact-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+    .hero::after { font-size: 12rem; bottom: 5%; right: 0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="logo">Nex<span>Docs</span></a>
+  <ul class="nav-links">
+    <li><a href="#services">Services</a></li>
+    <li><a href="#samples">Samples</a></li>
+    <li><a href="#process">Process</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-inner">
+    <span class="hero-badge">AI-Powered · Kenya-Based · Fast Turnaround</span>
+    <h1>Documents that<br/><em>open doors</em><br/>for your business.</h1>
+    <p class="hero-sub">Professional CVs, business proposals, SACCO communications, school documents, and automation tools — delivered fast, built right.</p>
+    <div class="hero-cta">
+      <a href="#services" class="btn-primary">View Services</a>
+      <a href="#contact" class="btn-outline">Get a Quote</a>
+    </div>
+  </div>
+</section>
+
+<!-- STATS BAR -->
+<div class="stats-bar">
+  <div class="stat"><span class="stat-num">48hr</span><span class="stat-label">Delivery Time</span></div>
+  <div class="stat"><span class="stat-num">100%</span><span class="stat-label">Remote & Online</span></div>
+  <div class="stat"><span class="stat-num">6+</span><span class="stat-label">Service Categories</span></div>
+  <div class="stat"><span class="stat-num">KES</span><span class="stat-label">Local Pricing</span></div>
+</div>
+
+<!-- SERVICES -->
+<section id="services">
+  <span class="section-tag">What We Do</span>
+  <h2 class="section-title">Services built for<br/>Kenyan businesses & individuals</h2>
+  <p class="section-body">Every service is delivered remotely via email or WhatsApp. No meetings required.</p>
+  <div class="services-grid">
+    <div class="service-card">
+      <div class="service-icon">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      </div>
+      <h3>CV & Cover Letters</h3>
+      <p>ATS-optimized resumes and compelling cover letters for job seekers, fresh graduates, and career changers across Kenya.</p>
+      <span class="service-tag">From KES 800</span>
+    </div>
+    <div class="service-card">
+      <div class="service-icon">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      </div>
+      <h3>Business Proposals</h3>
+      <p>Professionally structured proposals for tenders, investors, grants, and bank financing. Clear, persuasive, formatted correctly.</p>
+      <span class="service-tag">From KES 5,000</span>
+    </div>
+    <div class="service-card">
+      <div class="service-icon">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      </div>
+      <h3>School Documents</h3>
+      <p>Student report comments, school prospectuses, fee reminder templates, and parent communication scripts.</p>
+      <span class="service-tag">From KES 3,000</span>
+    </div>
+    <div class="service-card">
+      <div class="service-icon">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </div>
+      <h3>SACCO Communications</h3>
+      <p>Monthly newsletters, loan reminder messages, member FAQs, and AGM documents — written clearly for your members.</p>
+      <span class="service-tag">From KES 3,000</span>
+    </div>
+    <div class="service-card">
+      <div class="service-icon">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/></svg>
+      </div>
+      <h3>Social Media Content</h3>
+      <p>30-day content plans and ready-to-post captions for clinics, schools, property businesses, and SMEs.</p>
+      <span class="service-tag">From KES 4,000/month</span>
+    </div>
+    <div class="service-card">
+      <div class="service-icon">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07M8.46 8.46a5 5 0 0 0 0 7.07"/></svg>
+      </div>
+      <h3>Business Automation Tools</h3>
+      <p>Simple Excel trackers, WhatsApp message bots, and tenant/fee reminder systems for landlords and small businesses.</p>
+      <span class="service-tag">From KES 3,000</span>
+    </div>
+    <div class="service-card">
+      <div class="service-icon">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      </div>
+      <h3>Landlord Documents</h3>
+      <p>Tenancy agreements, rent reminder message sequences, and property management templates built for Kenyan law.</p>
+      <span class="service-tag">From KES 3,000</span>
+    </div>
+    <div class="service-card">
+      <div class="service-icon">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><rect x="1" y="3" width="15" height="13" rx="2"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+      </div>
+      <h3>Trade & Export Documents</h3>
+      <p>Export proposals, compliance document writing, and market communication for traders in Kisumu and the Lake region.</p>
+      <span class="service-tag">From KES 5,000</span>
+    </div>
+  </div>
+</section>
+
+<!-- SAMPLES -->
+<section id="samples">
+  <span class="section-tag">Portfolio</span>
+  <h2 class="section-title">Sample Work</h2>
+  <p class="section-body">A selection of document types and deliverables — available on request.</p>
+  <div class="samples-grid">
+    <div class="sample-card">
+      <span class="sample-label">Sample</span>
+      <span class="sample-type">CV & Cover Letter</span>
+      <h3>Marketing Graduate — Nairobi</h3>
+      <p>A clean, ATS-formatted 2-page CV with a tailored cover letter targeting FMCG roles. Includes skills summary and quantified achievements.</p>
+    </div>
+    <div class="sample-card">
+      <span class="sample-label">Sample</span>
+      <span class="sample-type">Business Proposal</span>
+      <h3>Fish Export Business — Kisumu</h3>
+      <p>12-page investor proposal for a lake fish processing and export business, including financial projections and regulatory compliance section.</p>
+    </div>
+    <div class="sample-card">
+      <span class="sample-label">Sample</span>
+      <span class="sample-type">SACCO Newsletter</span>
+      <h3>Monthly Member Update</h3>
+      <p>A two-page formatted newsletter with loan product highlights, member success story, and upcoming AGM notice — ready to print or send.</p>
+    </div>
+    <div class="sample-card">
+      <span class="sample-label">Sample</span>
+      <span class="sample-type">School Document</span>
+      <h3>End-Term Report Comments</h3>
+      <p>150 differentiated student report comments across 5 performance bands for primary school — editable, teacher-ready, done in 24 hours.</p>
+    </div>
+    <div class="sample-card">
+      <span class="sample-label">Sample</span>
+      <span class="sample-type">Social Media Pack</span>
+      <h3>30-Day Clinic Content Plan</h3>
+      <p>Health tips, service highlights, and patient reminders — 30 captions ready to copy-paste for Facebook and WhatsApp Status.</p>
+    </div>
+    <div class="sample-card">
+      <span class="sample-label">Sample</span>
+      <span class="sample-type">Landlord Template</span>
+      <h3>Tenant Reminder Sequence</h3>
+      <p>A 3-message WhatsApp rent reminder sequence (7 days before, due date, 3 days after) — firm, professional, and ready to send.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section id="process">
+  <span class="section-tag" style="color: var(--gold);">How It Works</span>
+  <h2 class="section-title">Simple. Fast. Remote.</h2>
+  <p class="section-body">Everything is handled online. No physical meetings, no delays.</p>
+  <div class="steps">
+    <div class="step">
+      <h4>You Send Your Brief</h4>
+      <p>WhatsApp or email us your requirements — a few sentences or bullet points is enough to get started.</p>
+    </div>
+    <div class="step">
+      <h4>We Confirm & Quote</h4>
+      <p>You receive a clear price and delivery time within 2 hours. No hidden charges, no surprises.</p>
+    </div>
+    <div class="step">
+      <h4>You Approve & Pay</h4>
+      <p>Payment via M-Pesa before delivery. We begin work immediately on confirmation.</p>
+    </div>
+    <div class="step">
+      <h4>We Deliver</h4>
+      <p>Your document arrives within 24–48 hours in your preferred format — Word, PDF, or Google Doc.</p>
+    </div>
+    <div class="step">
+      <h4>One Free Revision</h4>
+      <p>Not 100% satisfied? We revise once at no extra cost until it's right for you.</p>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section id="testimonials">
+  <span class="section-tag">Client Feedback</span>
+  <h2 class="section-title">What clients say</h2>
+  <p class="section-body">Real results for real people across Kenya.</p>
+  <div class="testimonials-grid">
+    <div class="testimonial">
+      <p>"I sent my details at night and had a complete CV and cover letter by morning. I applied the same day and got an interview call within a week."</p>
+      <span class="testimonial-author">— Job seeker, Nairobi · CV & Cover Letter</span>
+    </div>
+    <div class="testimonial">
+      <p>"The business proposal was thorough and professional. The bank officer said it was one of the most well-prepared documents they had seen."</p>
+      <span class="testimonial-author">— SME owner, Kisumu · Business Proposal</span>
+    </div>
+    <div class="testimonial">
+      <p>"I needed report comments for 120 students. They delivered 150 varied comments in under 24 hours. Saved me an entire week of work."</p>
+      <span class="testimonial-author">— Primary school teacher, Western Kenya · School Documents</span>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="contact-grid">
+    <div class="contact-info">
+      <span class="section-tag">Get In Touch</span>
+      <h2>Let's get your<br/>document done.</h2>
+      <p>Reach out via WhatsApp or email. Tell us what you need and we'll respond within 2 hours during business hours.</p>
+      <div class="contact-detail">
+        <span class="contact-icon-wrap">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+        </span>
+        <span>WhatsApp: +254 700 000 000 <em style="font-size:0.8rem; color:var(--muted)">(replace with your number)</em></span>
+      </div>
+      <div class="contact-detail">
+        <span class="contact-icon-wrap">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        </span>
+        <span><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="58363d203c373b2b76333d183f35393134763b3735">[email&#160;protected]</a> <em style="font-size:0.8rem; color:var(--muted)">(replace with your email)</em></span>
+      </div>
+      <div class="contact-detail">
+        <span class="contact-icon-wrap">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </span>
+        <span>Mon–Sat · 8am – 9pm EAT</span>
+      </div>
+      <div class="contact-detail">
+        <span class="contact-icon-wrap">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+        </span>
+        <span>Payment via M-Pesa</span>
+      </div>
+    </div>
+    <div>
+      <!-- SUCCESS MESSAGE (hidden by default) -->
+      <div id="form-success" style="display:none; background:var(--ink); color:var(--cream); padding:2rem; margin-bottom:1.5rem;">
+        <p style="font-family:'Playfair Display',serif; font-size:1.1rem; margin-bottom:0.5rem;">Message received!</p>
+        <p style="font-size:0.88rem; color:#aaa;">We'll respond within 2 hours. You can also reach us directly on WhatsApp below.</p>
+      </div>
+
+      <!-- FORMSPREE FORM -->
+      <form
+        id="contact-form"
+        action="https://formspree.io/f/YOUR_FORM_ID"
+        method="POST"
+        class="contact-form"
+      >
+        <div class="form-group">
+          <label>Your Name</label>
+          <input type="text" name="name" placeholder="e.g. Jane Otieno" required/>
+        </div>
+        <div class="form-group">
+          <label>WhatsApp / Email</label>
+          <input type="text" name="contact" placeholder="How should we reach you?" required/>
+        </div>
+        <div class="form-group">
+          <label>Service Needed</label>
+          <select name="service" required>
+            <option value="">— Select a service —</option>
+            <option>CV &amp; Cover Letter</option>
+            <option>Business Proposal</option>
+            <option>School Documents</option>
+            <option>SACCO Communications</option>
+            <option>Social Media Content</option>
+            <option>Landlord Documents</option>
+            <option>Business Automation Tool</option>
+            <option>Export / Trade Documents</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Brief Description</label>
+          <textarea name="message" rows="4" placeholder="Tell us what you need in a few lines..." required></textarea>
+        </div>
+
+        <!-- SUBMIT TO FORMSPREE -->
+        <button type="submit" class="btn-primary" style="width:100%; text-align:center; cursor:pointer;">
+          Send Message →
+        </button>
+      </form>
+
+      <!-- DIVIDER -->
+      <div style="display:flex; align-items:center; gap:1rem; margin:1.2rem 0;">
+        <div style="flex:1; height:1px; background:var(--border);"></div>
+        <span style="font-size:0.75rem; color:var(--muted); letter-spacing:0.08em; text-transform:uppercase;">or contact directly</span>
+        <div style="flex:1; height:1px; background:var(--border);"></div>
+      </div>
+
+      <!-- WHATSAPP BUTTON -->
+      <a href="https://wa.me/254700000000" target="_blank" class="btn-outline" style="width:100%; text-align:center; display:flex; align-items:center; justify-content:center; gap:0.6rem;">
+        <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.75;flex-shrink:0;">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+        Chat on WhatsApp
+      </a>
+
+      <p style="font-size:0.75rem; color:var(--muted); text-align:center; margin-top:0.8rem;">
+        Typically replies within 2 hours · Mon–Sat · 8am–9pm EAT
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <a href="#" class="logo">Nex<span>Docs</span></a>
+  <p>© 2025 NexDocs. Professional document services across Kenya.</p>
+  <p style="font-size:0.75rem; color:#444;">Payment via M-Pesa · 24–48hr delivery · Remote service</p>
+</footer>
+
+<script>
+  const form = document.getElementById('contact-form');
+  const success = document.getElementById('form-success');
+
+  form.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const btn = form.querySelector('button[type="submit"]');
+    btn.textContent = 'Sending…';
+    btn.disabled = true;
+
+    const data = new FormData(form);
+    try {
+      const res = await fetch(form.action, {
+        method: 'POST',
+        body: data,
+        headers: { 'Accept': 'application/json' }
+      });
+      if (res.ok) {
+        form.style.display = 'none';
+        success.style.display = 'block';
+      } else {
+        btn.textContent = 'Failed — try WhatsApp below';
+        btn.disabled = false;
+      }
+    } catch(err) {
+      btn.textContent = 'Failed — try WhatsApp below';
+      btn.disabled = false;
+    }
+  });
+</script>
+
+</body>
+</html>
